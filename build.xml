@@ -1,0 +1,50 @@
+<project name="my-php-project" default="build">
+  <!-- Set properties for the project -->
+  <property name="src.dir" value="src" />
+  <property name="build.dir" value="build" />
+  <property name="dist.dir" value="dist" />
+  <property name="phpunit.phar" value="phpunit.phar" />
+
+  <!-- Define the clean target -->
+  <target name="clean">
+    <!-- Delete the build and dist directories -->
+    <delete dir="${build.dir}" />
+    <delete dir="${dist.dir}" />
+  </target>
+
+  <!-- Define the compile target -->
+  <target name="compile" depends="clean">
+    <!-- Create the build directory -->
+    <mkdir dir="${build.dir}" />
+
+    <!-- Copy the PHP source code to the build directory -->
+    <copy todir="${build.dir}">
+      <fileset dir="${src.dir}" />
+    </copy>
+  </target>
+
+  <!-- Define the test target -->
+  <target name="test" depends="compile">
+    <!-- Download PHPUnit if it doesn't already exist -->
+    <get src="https://phar.phpunit.de/phpunit.phar" dest="${phpunit.phar}" usetimestamp="true" />
+
+    <!-- Run PHPUnit tests -->
+    <exec executable="php" dir="${build.dir}">
+      <arg value="${phpunit.phar}" />
+      <arg value="--bootstrap" />
+      <arg value="bootstrap.php" />
+      <arg value="tests" />
+    </exec>
+  </target>
+
+  <!-- Define the build target -->
+  <target name="build" depends="test">
+    <!-- Create the dist directory -->
+    <mkdir dir="${dist.dir}" />
+
+    <!-- Copy the built PHP source code to the dist directory -->
+    <copy todir="${dist.dir}">
+      <fileset dir="${build.dir}" />
+    </copy>
+  </target>
+</project>
